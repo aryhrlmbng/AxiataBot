@@ -313,6 +313,7 @@ async def cmd_beli(interaction: discord.Interaction, option_code: str, konfirmas
 
     pdata = pm.get("data", pm)
     token_payment = pdata.get("token_payment", "")
+    ts_to_sign = pdata.get("timestamp", 0)
     if not token_payment:
         return await interaction.followup.send("❌ Tidak ada token_payment di response.", ephemeral=True)
 
@@ -325,6 +326,7 @@ async def cmd_beli(interaction: discord.Interaction, option_code: str, konfirmas
         price,
         token_confirmation,
         token_payment,
+        ts_to_sign,
     )
     if not result:
         return await interaction.followup.send("❌ Pembelian gagal (response kosong/null).", ephemeral=True)

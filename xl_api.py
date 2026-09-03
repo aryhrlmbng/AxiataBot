@@ -437,32 +437,59 @@ def purchase_balance(
     price: int,
     token_confirmation: str,
     token_payment: str,
+    ts_to_sign: int | None = None,
     xtime_ms: int | None = None,
 ) -> dict | None:
-    """Beli paket via saldo."""
+    """Beli paket via saldo (pulsa).
+
+    Endpoint: payments/api/v8/settlement-multipayment dengan payment_method=BALANCE.
+    ts_to_sign: server timestamp dari payment-methods-option response.
+    """
+    if ts_to_sign is None:
+        ts_to_sign = int(time.time())
     if xtime_ms is None:
         xtime_ms = int(time.time() * 1000)
-    sig_time_sec = xtime_ms // 1000
 
-    path = "payments/api/v8/settlement-balance"
+    path = "payments/api/v8/settlement-multipayment"
     x_signature = make_x_signature_payment(
-        access_token, sig_time_sec, option_code, token_payment, "BALANCE", "BUY_PACKAGE", path
+        access_token, ts_to_sign, option_code, token_payment, "BALANCE", "BUY_PACKAGE", path
     )
 
     body = {
-        "payment_type": "PURCHASE",
+        "total_discount": 0,
         "is_enterprise": False,
-        "payment_target": option_code,
+        "payment_token": "",
+        "token_payment": token_payment,
+        "activated_autobuy_code": "",
+        "cc_payment_type": "",
+        "is_myxl_wallet": False,
+        "pin": "",
+        "ewallet_promo_id": "",
+        "members": [],
+        "total_fee": 0,
+        "fingerprint": "",
+        "autobuy_threshold_setting": {"label": "", "type": "", "value": 0},
+        "is_use_point": False,
         "lang": "en",
-        "is_referral": False,
+        "payment_method": "BALANCE",
+        "timestamp": int(time.time()),
+        "points_gained": 0,
+        "can_trigger_rating": False,
+        "akrab_members": [],
+        "akrab_parent_alias": "",
+        "referral_unique_code": "",
+        "coupon": "",
+        "payment_for": "BUY_PACKAGE",
         "with_upsell": False,
         "topup_number": "",
         "stage_token": "",
         "authentication_id": "",
+        "encrypted_payment_token": "",
         "token": "",
         "token_confirmation": token_confirmation,
         "access_token": access_token,
         "wallet_number": "",
+        "encrypted_authentication_id": "",
         "additional_data": {},
         "total_amount": price,
         "is_using_autobuy": False,
